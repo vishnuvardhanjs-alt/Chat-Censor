@@ -1,35 +1,57 @@
-import React from 'react'
-import { MessageBox } from 'react-chat-elements'
-import 'react-chat-elements/dist/main.css'
-import './Chat.css'
-import { ChatItem } from 'react-chat-elements'
+import React, { useEffect, useState } from "react";
+import "react-chat-elements/dist/main.css";
+import "./Chat.css";
+import { ChatItem, MessageBox } from "react-chat-elements";
+import { db } from "../../firebase/firebase";
+import { getDocs, collection } from "firebase/firestore";
 
 function Chat() {
-    return (
-        <div className="main-cont">
-            <div className="msg-view">
-                <div className='chat-top'>
-                    <div className="messageBox">
-                        <input required="" placeholder="Add Contact" type="text" id="messageInput" />
-                        <button id="sendButton" type='submit'>
-                            Add
-                        </button>
-                    </div>
-                </div>
+  const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-                <div className='chat-bot'>
-                    <ChatItem
-                        avatar={'https://lh3.googleusercontent.com/-Aj9UpzsKG6I/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkl6EVfI0qOj1cWw_nhbrLS1ToCsBw/photo.jpg?sz=46'}
-                        alt={'Reactjs'}
-                        title={'Facebook'}
-                        // subtitle={'What are you doing?'}
-                        date={""}
-                    />
-                </div>
+  useEffect(() => {
+    async function getData() {
+      setLoading(true);
+      const querySnapshot = await getDocs(collection(db, "Users"));
+      const items = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+      setChats(items);
+      setLoading(false);
+    }
+    getData();
+  }, []);
 
-            </div>
-        </div >
-    )
+  return (
+    <div className="main-cont">
+      <div className="msg-view">
+        <div className="chat-top">
+          <div className="messageBox">
+            <input
+              required=""
+              placeholder="Add Contact"
+              type="text"
+              id="messageInput"
+            />
+            <button id="sendButton" type="submit">
+              Add
+            </button>
+          </div>
+        </div>
+
+        <div className="chat-bot">
+          {chats.map((item, index) => {
+            return (
+              <ChatItem
+                avatar={item.pfp}
+                alt={item.name}
+                title={item.name}
+                date={""}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default Chat
+export default Chat;

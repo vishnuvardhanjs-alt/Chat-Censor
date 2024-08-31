@@ -5,12 +5,13 @@ import { auth, db, google_provider } from '../../firebase/firebase'
 import { signInWithPopup } from 'firebase/auth'
 import { ContextStore } from '../../context/store'
 import { collection, doc, getDoc, setDoc } from 'firebase/firestore'
+import { useNavigate } from 'react-router-dom'
+
 
 function Login() {
 
   const { user, setUser } = useContext(ContextStore);
-
-
+  const navigate = useNavigate();
   async function checkDocumentNotExists(collectionName, documentId) {
     const docRef = doc(db, collectionName, documentId);
     const result = await getDoc(docRef).then(
@@ -38,10 +39,8 @@ function Login() {
     });
 
   }
-
-
+  
   function handleLogin() {
-
     signInWithPopup(auth, google_provider).then(
       async (res) => {
         setUser(res.user)
@@ -53,6 +52,7 @@ function Login() {
         } else {
           console.log("user not created")
         }
+        navigate("/chat")
       }
     ).catch((err) => {
       console.log(err);
