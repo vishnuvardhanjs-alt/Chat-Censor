@@ -1,23 +1,108 @@
 import React, { useEffect, useState } from "react";
 import "react-chat-elements/dist/main.css";
 import "./Chat.css";
-import { ChatItem, MessageBox } from "react-chat-elements";
-import { db } from "../../firebase/firebase";
-import { getDocs, collection } from "firebase/firestore";
+import { ChatItem } from "react-chat-elements";
+import { auth, db } from "../../firebase/firebase";
+import {
+  getDocs,
+  collection,
+  doc,
+  updateDoc,
+  getDoc,
+  query,
+  where,
+  arrayUnion
+} from "firebase/firestore";
+import { getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 
 function Chat() {
   const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [searchUser, setSearchUser] = useState("");
+  const [useraddCount, setaddCount] = useState(0);
+
+  async function getDocsFromFirebase(id) {
+    const querySnapshot = doc(db, "Users", id);
+    const docSnap = await getDoc(querySnapshot);
+    return docSnap.data();
+  }
 
   useEffect(() => {
     async function getData() {
-      setLoading(true);
-      const querySnapshot = await getDocs(collection(db, "Users"));
-      const items = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-      setChats(items);
-      setLoading(false);
+      const data = await getDocsFromFirebase(
+        localStorage.getItem("cur_user_id")
+      );
+      const temp = data.chats;
+      let temp_chats = [];
+      if (temp !== undefined) {
+        for (let i = 0; i < temp.length; i++) {
+          const chat_to = await getDocsFromFirebase(temp[i]);
+          temp_chats.push(chat_to);
+        }
+        setChats(temp_chats);
+      }
     }
     getData();
+  }, [useraddCount]);
+
+  async function getDocumentIdByField(collectionName, fieldName, fieldValue) {
+    const colRef = collection(db, collectionName);
+
+    const q = query(colRef, where(fieldName, "==", fieldValue));
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docId = querySnapshot.docs[0].id;
+      return docId;
+    } else {
+      return null;
+    }
+  }
+
+  const addChat = async () => {
+    const querySnapshot = doc(db, "Users", localStorage.getItem("cur_user_id"));
+    const found_id = await getDocumentIdByField("Users", "email", searchUser);
+    if (found_id === null) {
+      alert("User Not Found!...");
+      return;
+    } else if (found_id === localStorage.getItem("cur_user_id")) {
+      alert("Cannot add yourself!...");
+      return;
+    }
+
+    const data = {
+      chats: arrayUnion(found_id),
+    };
+
+    updateDoc(querySnapshot, data)
+      .then(() => {
+        setaddCount(useraddCount + 1);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // User successfully signed in
+          const user = result.user;
+          console.log("User info:", user);
+
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          console.log("OAuth token:", token);
+        } else {
+          console.log("No redirect result available");
+        }
+      })
+      .catch((error) => {
+        console.error(
+          `Error during sign-in with redirect: ${error.code} - ${error.message}`
+        );
+      });
   }, []);
 
   return (
@@ -30,8 +115,9 @@ function Chat() {
               placeholder="Add Contact"
               type="text"
               id="messageInput"
+              onChange={(e) => setSearchUser(e.target.value)}
             />
-            <button id="sendButton" type="submit">
+            <button id="sendButton" onClick={addChat} type="submit">
               Add
             </button>
           </div>
@@ -41,6 +127,7 @@ function Chat() {
           {chats.map((item, index) => {
             return (
               <ChatItem
+                key={index}
                 avatar={item.pfp}
                 alt={item.name}
                 title={item.name}

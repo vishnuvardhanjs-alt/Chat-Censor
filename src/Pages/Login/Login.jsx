@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react'
 import './Login.css'
 import LoginArt from "../../Assets/Login/chat.jpg"
-import { auth, db, google_provider } from '../../firebase/firebase'
-import { signInWithPopup } from 'firebase/auth'
+import { auth, db, google_provider} from '../../firebase/firebase'
+import { signInWithRedirect, getRedirectResult, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { ContextStore } from '../../context/store'
 import { collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
@@ -39,7 +39,7 @@ function Login() {
     });
 
   }
-  
+
   function handleLogin() {
     signInWithPopup(auth, google_provider).then(
       async (res) => {
@@ -59,6 +59,14 @@ function Login() {
 
     })
   }
+
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("cur_user_id", user.uid)
+    }
+
+  }, [user])
 
 
   return (
