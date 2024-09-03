@@ -35,7 +35,8 @@ function Login() {
     await setDoc(myDocRef, {
       email: user.email,
       name: user.displayName,
-      pfp: user.photoURL
+      pfp: user.photoURL,
+      uid: user.uid
     });
 
   }
@@ -45,14 +46,14 @@ function Login() {
       async (res) => {
         setUser(res.user)
         const userNotExists = await checkDocumentNotExists("Users", res.user.uid)
-        console.log("condition" + " " + userNotExists)
+        // console.log("condition" + " " + userNotExists)
         if (userNotExists) {
           await addUser(res.user)
-          console.log("created user")
+          // console.log("created user")
         } else {
-          console.log("user not created")
+          // console.log("user not created")
         }
-        navigate("/chat")
+        navigate("/home")
       }
     ).catch((err) => {
       console.log(err);
