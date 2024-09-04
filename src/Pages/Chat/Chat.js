@@ -1,18 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react'
 import './Chat.css'
 import { useLocation } from 'react-router-dom'
-import { addDoc, collection, getDocs, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { MessageBox } from 'react-chat-elements';
-import 'react-chat-elements/dist/main.css'
-import userEvent from '@testing-library/user-event';
-
+import 'react-chat-elements/dist/main.css';
+import { Filter } from 'bad-words'
 
 
 
 function Chat() {
     const endRef = useRef(null);
+    const filter = new Filter();
 
+    filter.addWords('some', 'bad', 'word')
+    
     const { state } = useLocation();
     const { from, to } = state;
 
@@ -25,7 +27,7 @@ function Chat() {
             const docRef = await addDoc(collection(db, collection_id), {
                 from: from,
                 to: to,
-                message: text,
+                message: filter.clean(text),
                 time: Timestamp.now()
             });
             console.log("Document written with ID: ", docRef.id);
