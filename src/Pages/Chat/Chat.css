@@ -1,0 +1,84 @@
+.main-cont{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  
+}
+
+.msg-cont{
+  height: 90%;
+  width: 100%;
+  background-color: #f6e2bc;
+  overflow-y: scroll;
+}
+
+.msg-view{
+  height: 100%;
+  width: 40%;
+}
+
+.send-btn{
+  background-color: #121212;
+  color: white;
+}
+
+.messageBox {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  background-color: #2d2d2d;
+  border: 1px solid rgb(63, 63, 63);
+}
+.messageBox:focus-within {
+  border: 1px solid rgb(110, 110, 110);
+}
+
+#messageInput {
+  width: 90%;
+  padding-left: 10px;
+  height: 100%;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  color: white;
+}
+#messageInput:focus ~ #sendButton svg path,
+#messageInput:valid ~ #sendButton svg path {
+  fill: #3c3c3c;
+  stroke: white;
+}
+
+#sendButton {
+  width: fit-content;
+  height: 100%;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+  margin-right: 10px;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+  .msg-view{
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .msg-cont{
+    height: 80%;
+    width: 100%;
+  }
+
+  .messageBox{
+    height: 10%;
+    width: 100%;
+  }
+
+}

@@ -91,24 +91,24 @@ function Home() {
   }
 
   return (
-    <div className="main-cont">
-      <div className="msg-view">
-        <div className="chat-top">
-          <div className="messageBox">
+    <div className="home-main-cont">
+      <div className="home-msg-view">
+        <div className="home-chat-top">
+          <div className="home-messageBox">
             <input
               required=""
               placeholder="Add Contact"
               type="text"
-              id="messageInput"
+              id="home-messageInput"
               onChange={(e) => setSearchUser(e.target.value)}
             />
-            <button id="sendButton" onClick={addChat} type="submit">
+            <button id="home-sendButton" onClick={addChat} type="submit">
               Add
             </button>
           </div>
         </div>
 
-        <div className="chat-bot">
+        <div className="home-chat-bot">
           {chats.map((item, index) => {
             return (
               <ChatItem
