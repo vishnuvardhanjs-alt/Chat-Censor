@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useReducer } from "react";
+import React, { useEffect, useState, useRef} from "react";
 import "./Chat.css";
 import { useLocation } from "react-router-dom";
 import {
@@ -47,7 +47,7 @@ function Chat() {
   }
 
   useEffect(()=>{
-    if (senti == 69) {
+    if (senti === 69) {
         setEmoji("🥵")
     } else if (senti > 0) {
         setEmoji("😄")
@@ -69,6 +69,8 @@ function Chat() {
   }, [msgs]);
 
   useEffect(() => {
+    endRef.current?.lastElementChild?.scrollIntoView();
+    let msg_len = msgs.length
     const collection_id = (from + to).split("").sort().join("");
     const q = query(collection(db, collection_id), orderBy("time"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -103,7 +105,7 @@ function Chat() {
   return (
     <div className="chat-main-cont">
       <div className="chat-msg-view">
-        <div className="chat-msg-cont">
+        <div className="chat-msg-cont" ref={endRef}>
           {msgs.map((item, index) => {
             return (
               <MessageBox
