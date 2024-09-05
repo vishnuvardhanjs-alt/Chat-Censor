@@ -69,8 +69,6 @@ function Chat() {
   }, [msgs]);
 
   useEffect(() => {
-    const objDiv = document.getElementsByClassName("msg-cont");
-    objDiv[0].scrollTop = objDiv[0].scrollHeight;
     const collection_id = (from + to).split("").sort().join("");
     const q = query(collection(db, collection_id), orderBy("time"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -103,9 +101,9 @@ function Chat() {
   };
 
   return (
-    <div className="main-cont">
-      <div className="msg-view">
-        <div className="msg-cont">
+    <div className="chat-main-cont">
+      <div className="chat-msg-view">
+        <div className="chat-msg-cont">
           {msgs.map((item, index) => {
             return (
               <MessageBox
@@ -116,7 +114,7 @@ function Chat() {
             );
           })}
         </div>
-        <div className="messageBox">
+        <div className="chat-messageBox">
           <input
             required=""
             onKeyDown={handleKeyDown}
@@ -126,10 +124,10 @@ function Chat() {
             value={text}
             placeholder="Message..."
             type="text"
-            id="messageInput"
+            id="chat-messageInput"
           />
           <button
-            id="sendButton"
+            id="chat-sendButton"
             type="submit"
             onClick={() => {
               handleSend();
@@ -139,16 +137,16 @@ function Chat() {
           </button>
         </div>
       </div>
-      <div className="right-cont">
+      <div className="chat-right-cont">
         {!isNaN(senti) ? (
-          <div className="score-cont">
+          <div className="chat-score-cont">
             <p>Sentiment Score : {senti}</p>
-            <p className="emoji">{emoji}</p>
+            <p className="chat-emoji">{emoji}</p>
           </div>
         ) : (
-          <div className="score-cont">
+          <div className="chat-score-cont">
             <p>Sentiment Score : 0.00</p>
-            <p className="emoji">😐</p>
+            <p className="chat-emoji">😐</p>
           </div>
         )}
       </div>
